@@ -1,0 +1,18 @@
+parameters:
+    level: 6
+    inferPrivatePropertyTypeFromConstructor: true
+    reportUnmatchedIgnoredErrors: false
+    phpVersion: 80200 # PHP 8.2
+
+    paths:
+        - app
+        - bin
+        - www/index.php
+
+    excludePaths:
+        - config
+        # - tests
+        - vendor
+
+    bootstrapFiles:
+        - app/phpstan-bootstrap.php

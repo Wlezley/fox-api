@@ -1,0 +1,8 @@
+/config/api.neon
+/node_modules/
+/vendor/
+/**/log/*
+/**/temp/*
+
+!.gitignore
+!.htaccess
