@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\ApiModule\Presenters;
 
 use Nette;
+use Nette\Http\Response;
 use Tracy\Debugger;
 
 final class DefaultPresenter extends Nette\Application\UI\Presenter
@@ -17,13 +18,14 @@ final class DefaultPresenter extends Nette\Application\UI\Presenter
     public function actionDefault(): void
     {
         // Test
-        $data['default'] = [
-            'status' => [
-                'code' => 200,
-                'message' => 'OK'
+        $payload = [
+            'status' => 'ok',
+            'response' => [
+                'code' => Response::S200_OK,
+                'message' => 'Test api response'
             ]
         ];
 
-        $this->sendJson($data);
+        $this->sendJson($payload);
     }
 }

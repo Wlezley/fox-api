@@ -3,7 +3,8 @@ search:
         in: %appDir%
         classes:
             - *Factory
-            - *Facade
+            - *Repository
+            - *Manager
 
 services:
     router: App\RouterFactory::createRouter
