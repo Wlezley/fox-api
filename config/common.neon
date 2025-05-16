@@ -3,6 +3,9 @@ parameters:
     strictMode: false
 
 application:
+    errorPresenter:
+        4xx: Error4xx
+        5xx: Error5xx
     mapping: App\ApiModule\Presenters\*Presenter
 
 database:
