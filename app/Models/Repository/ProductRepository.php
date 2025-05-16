@@ -13,7 +13,7 @@ final class ProductRepository extends BaseRepository
     public const TABLE_NAME = 'product';
 
     /**
-     * Insert new product
+     * Get product by ID
      *
      * @param int $productId Product ID
      *
@@ -42,16 +42,17 @@ final class ProductRepository extends BaseRepository
      */
     public function insert(ProductEntity $product): ProductEntity
     {
-        if ($product->id !== null) {
-            $product->id = null;
-        }
+        $data = $product->toDatabaseRow();
+        unset($data['id'], $data['created_at'], $data['updated_at']);
 
         $row = $this->db->table(self::TABLE_NAME)
-            ->insert($product->toDatabaseRow());
+            ->insert($data);
 
-        $product->id = (int) $row->getPrimary();
+        $id = (int) $row->getPrimary();
+        $newProduct = $this->getProductById($id);
 
-        return $product;
+
+        return $newProduct;
     }
 
     /**
@@ -59,18 +60,25 @@ final class ProductRepository extends BaseRepository
      *
      * @param ProductEntity $product Product data
      *
-     * @return int Number of affected rows
+     * @return ProductEntity Data of updated product
      * @throws ProductException If product entity does not have set ID
      */
-    public function update(ProductEntity $product): int
+    public function update(ProductEntity $product): ProductEntity
     {
         if ($product->id === null) {
             throw new ProductException('Product Entity must have an ID to be updated.', Response::S400_BadRequest);
         }
 
-        return $this->db->table(self::TABLE_NAME)
+        $data = $product->toDatabaseRow();
+        unset($data['id'], $data['created_at'], $data['updated_at']);
+
+        $affectedRows = $this->db->table(self::TABLE_NAME)
             ->where('id', $product->id)
-            ->update($product->toDatabaseRow());
+            ->update($data);
+
+        $updatedProduct = $this->getProductById($product->id);
+
+        return $updatedProduct;
     }
 
     /**

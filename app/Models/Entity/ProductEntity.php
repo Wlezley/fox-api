@@ -48,6 +48,8 @@ final class ProductEntity
             'name' => $this->name,
             'price' => $this->price,
             'stock' => $this->stock,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
             'deleted' => $this->deleted,
         ];
     }

@@ -134,6 +134,12 @@ paths:
           $ref: "#/components/responses/error"
     patch:
       description: 'Update product'
+      parameters:
+        - name: 'id'
+          in: query
+          required: false
+          schema:
+            type: integer
       requestBody:
         required: true
         content:

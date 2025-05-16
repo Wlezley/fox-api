@@ -98,10 +98,8 @@ final class ProductManager extends ApiManager
                 $data = Json::decode($this->httpRequest->getRawBody(), true);
                 $productData = $this->productRepo->getProductById((int) $id);
                 $productData->preapreForUpdate($data);
-                $this->data = [
-                    'id' => $id,
-                    'affected_rows' => $this->productRepo->update($productData)
-                ];
+                $productData = $this->productRepo->update($productData);
+                $this->data = $productData->toArray();
                 return true;
             } catch (JsonException $e) {
                 $this->setError(

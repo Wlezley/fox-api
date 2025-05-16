@@ -17,11 +17,9 @@ database:
 
 http:
     headers:
-        X-Powered-By: off
+        X-Powered-By: 'Fox API v1'
 
 tracy:
-    # email:
-    # fromEmail:
     logSeverity: E_ERROR
     maxLength: 150
     maxDepth: 10
