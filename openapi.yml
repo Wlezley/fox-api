@@ -59,24 +59,6 @@ components:
           minimum: 0
           default: 0
   responses:
-    # bad_request:
-    #   description: 'Bad request'
-    #   content:
-    #     application/json:
-    #       schema:
-    #         type: object
-    #         properties:
-    #           message:
-    #             type: string
-    # not_found:
-    #   description: 'Object not found'
-    #   content:
-    #     application/json:
-    #       schema:
-    #         type: object
-    #         properties:
-    #           message:
-    #             type: string
     error:
       description: 'Error'
       content:
@@ -213,67 +195,57 @@ paths:
           description: 'Product not found'
           $ref: "#/components/responses/error"
 
-  /product/find:
-    get:
-      description: 'Find products by name / price(min/max) / stock (min/max)'
-      parameters:
-        - name: 'name'
-          in: query
-          schema:
-            type: string
-            minLength: 3
-            maxLength: 255
-        - name: 'minPrice'
-          in: query
-          schema:
-            type: number
-            format: float
-        - name: 'maxPrice'
-          in: query
-          schema:
-            type: number
-            format: float
-        - name: 'minStock'
-          in: query
-          schema:
-            type: integer
-        - name: 'maxStock'
-          in: query
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: 'Product(s) found'
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/product_data"
-        '400':
-          description: 'Filter parameters is missing'
-          $ref: "#/components/responses/error"
-        '404':
-          description: 'Product(s) not found'
-          $ref: "#/components/responses/error"
-
   /products:
     get:
-      description: 'Get product list according to (optional) limit and offset parameters'
+      description: 'Get product list according to limit and offset with filtering (optional)'
       parameters:
         - name: 'limit'
           in: query
           description: 'Limits the number of items on a page'
           schema:
             type: integer
+            default: 50
+            maximum: 100
         - name: 'offset'
           in: query
           description: 'Specifies the page number of the items to be displayed'
           schema:
             type: integer
+            default: 0
+        - name: 'name'
+          in: query
+          description: 'Search for part of name'
+          schema:
+            type: string
+            minLength: 3
+            maxLength: 255
+        - name: 'minPrice'
+          in: query
+          description: 'Minimal price'
+          schema:
+            type: number
+            format: float
+            minimum: 0
+        - name: 'maxPrice'
+          in: query
+          description: 'Maximal price'
+          schema:
+            type: number
+            format: float
+        - name: 'minStock'
+          in: query
+          description: 'Minimal stock'
+          schema:
+            type: integer
+            minimum: 0
+        - name: 'maxStock'
+          in: query
+          description: 'Maximal stock'
+          schema:
+            type: integer
       responses:
         '200':
-          description: 'Products found'
+          description: 'List of products'
           content:
             application/json:
               schema:
@@ -281,6 +253,6 @@ paths:
                 items:
                   $ref: "#/components/schemas/product_data"
         '404':
-          description: 'Products not found'
+          description: 'No products are found'
           $ref: "#/components/responses/error"
 

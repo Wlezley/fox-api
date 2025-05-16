@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-// use Nette\Database\Explorer;
 use Nette\Http\Request;
 use Nette\Http\Response;
 
@@ -15,13 +14,15 @@ class ApiManager
     public const DefaultStatus = self::ErrorStatus;
 
     protected string $status = self::DefaultStatus;
-    protected ?int $code = null; // SET DEFAULT to 500 or 403 or...?
+    protected ?int $code = null;
     protected ?string $message = null;
     protected string $method;
 
     /** @var array<string> $allowedMethods */
     protected array $allowedMethods = [
-        Request::Get,
+        // Possible values:
+        // ----------------
+        // Request::Get,
         // Request::Post,
         // Request::Head,
         // Request::Put,
