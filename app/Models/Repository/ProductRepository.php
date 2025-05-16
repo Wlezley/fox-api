@@ -51,6 +51,8 @@ final class ProductRepository extends BaseRepository
         $id = (int) $row->getPrimary();
         $newProduct = $this->getProductById($id);
 
+        (new ProductHistoryRepository($this->db))
+            ->createFromProduct($newProduct);
 
         return $newProduct;
     }
@@ -77,6 +79,11 @@ final class ProductRepository extends BaseRepository
             ->update($data);
 
         $updatedProduct = $this->getProductById($product->id);
+
+        if ($affectedRows > 0) {
+            (new ProductHistoryRepository($this->db))
+                ->createFromProduct($updatedProduct);
+        }
 
         return $updatedProduct;
     }

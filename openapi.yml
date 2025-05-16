@@ -214,7 +214,7 @@ paths:
             maximum: 100
         - name: 'offset'
           in: query
-          description: 'Specifies the page number of the items to be displayed'
+          description: 'Offset of the first row to return'
           schema:
             type: integer
             default: 0
@@ -262,3 +262,40 @@ paths:
           description: 'No products are found'
           $ref: "#/components/responses/error"
 
+  /product/history:
+    get:
+      description: 'Get list of product history by product ID'
+      parameters:
+        - name: 'id'
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: 'limit'
+          in: query
+          description: 'Limits the number of items on a page'
+          schema:
+            type: integer
+            default: 50
+            minimum: 1
+            maximum: 100
+        - name: 'offset'
+          in: query
+          description: 'Offset of the first row to return'
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: 'Product found'
+          $ref: "#/components/responses/status"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/product_data"
+        '400':
+          description: 'Product ID is missing'
+          $ref: "#/components/responses/error"
+        '404':
+          description: 'Product does not have history records or not found'
+          $ref: "#/components/responses/error"
