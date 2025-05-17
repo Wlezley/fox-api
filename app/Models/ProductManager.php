@@ -28,11 +28,6 @@ final class ProductManager extends ApiManager
         public ProductRepository $productRepo
     ) {}
 
-    public function processRequest(): bool
-    {
-        return parent::processRequest();
-    }
-
     protected function processGET(): bool
     {
         $id = $this->httpRequest->getQuery('id');
@@ -97,7 +92,7 @@ final class ProductManager extends ApiManager
             try {
                 $data = Json::decode($this->httpRequest->getRawBody(), true);
                 $productData = $this->productRepo->getProductById((int) $id);
-                $productData->preapreForUpdate($data);
+                $productData->prepareForUpdate($data);
                 $productData = $this->productRepo->update($productData);
                 $this->data = $productData->toArray();
                 return true;

@@ -21,11 +21,6 @@ final class ProductListManager extends ApiManager
         public ProductRepository $productRepo
     ) {}
 
-    public function processRequest(): bool
-    {
-        return parent::processRequest();
-    }
-
     protected function processGET(): bool
     {
         // TODO: Validate the Query params !!!
@@ -69,12 +64,4 @@ final class ProductListManager extends ApiManager
 
         return false;
     }
-
-    // /**
-    //  * @todo Create multiple products at once?
-    //  */
-    // protected function processPOST(): bool
-    // {
-    //     return false;
-    // }
 }

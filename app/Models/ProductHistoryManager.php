@@ -21,11 +21,6 @@ final class ProductHistoryManager extends ApiManager
         public ProductHistoryRepository $productHistoryRepo
     ) {}
 
-    public function processRequest(): bool
-    {
-        return parent::processRequest();
-    }
-
     protected function processGET(): bool
     {
         $id = $this->httpRequest->getQuery('id');

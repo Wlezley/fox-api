@@ -78,7 +78,7 @@ final class ProductEntity
      * @param array<string,mixed> $data Data to update
      * @return ProductEntity
      */
-    public function preapreForUpdate(array $data): self
+    public function prepareForUpdate(array $data): self
     {
         $this->name = (string) ($data['name'] ?? $this->name);
         $this->price = (float) ($data['price'] ?? $this->price);
