@@ -7,8 +7,10 @@ namespace App\Models;
 use App\Models\Entity\ProductEntity;
 use App\Models\Exception\ProductException;
 use App\Models\Repository\ProductRepository;
+use App\Models\Validator\ProductInputValidator;
 use Nette\Http\Request;
 use Nette\Http\Response;
+use Nette\InvalidArgumentException;
 use Nette\Utils\Json;
 use Nette\Utils\JsonException;
 
@@ -72,8 +74,6 @@ final class ProductManager extends ApiManager
      * Expects a valid JSON body with required product data.
      *
      * @return bool True on success, false on validation or JSON error
-     *
-     * @todo Validate JSON post data values ...
      */
     protected function processPOST(): bool
     {
@@ -88,14 +88,18 @@ final class ProductManager extends ApiManager
         }
 
         if (empty($data)) {
-            $this->setError(
-                Response::S400_BadRequest,
-                "Empty input data"
-            );
+            $this->setError(Response::S400_BadRequest, "Empty input data");
             return false;
         }
 
-        $productData = ProductEntity::fromDatabaseRow($data);
+        try {
+            $validatedData = ProductInputValidator::validate($data);
+        } catch (InvalidArgumentException $e) {
+            $this->setError(Response::S400_BadRequest, $e->getMessage());
+            return false;
+        }
+
+        $productData = ProductEntity::fromDatabaseRow($validatedData);
         $productData = $this->productRepo->insert($productData);
         $this->data = $productData->toArray();
         return true;

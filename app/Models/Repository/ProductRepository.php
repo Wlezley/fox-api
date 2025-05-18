@@ -6,7 +6,6 @@ namespace App\Models\Repository;
 
 use App\Models\Entity\ProductEntity;
 use App\Models\Exception\ProductException;
-use App\Models\Exception\ProductHistoryException;
 use Nette\Http\Response;
 
 final class ProductRepository extends BaseRepository
@@ -119,8 +118,6 @@ final class ProductRepository extends BaseRepository
      * @return int Number of affected rows.
      *
      * @throws ProductException If the product does not exist.
-     *
-     * @todo Also delete related entries from the product_history table (?)
      */
     public function delete(int $productId): int
     {
