@@ -1,0 +1,7 @@
+parameters:
+    database:
+        host: database
+        port: 3306
+        name: "fox-api"
+        user: "fox"
+        password: "fox"

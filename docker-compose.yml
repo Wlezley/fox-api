@@ -1,0 +1,67 @@
+services:
+
+  webserver:
+    build:
+      context: ./.docker/php82
+      dockerfile: Dockerfile
+    container_name: fox-api-php82
+    restart: always
+    ports:
+      - "8080:80" # Host port 8080 maps to container port 80
+    links:
+      - database
+    # environment:
+    #   -
+    volumes:
+      - ./:/var/www/html:rw
+      - ./.docker/config/php/php.ini:/usr/local/etc/php/php.ini
+      - ./.docker/config/ssl:/etc/apache2/ssl/
+      - ./.docker/config/vhosts:/etc/apache2/sites-enabled
+      - ./.docker/logs/apache2:/var/log/apache2
+      - ./.docker/logs/xdebug:/var/log/xdebug
+
+  database:
+    build:
+      context: ./.docker/mariadb106
+      dockerfile: Dockerfile
+    container_name: fox-api-mariadb106
+    restart: always
+    ports:
+      - "3308:3306" # Host port 3308 maps to container port 3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: fox-api
+      MYSQL_USER: fox
+      MYSQL_PASSWORD: fox
+    volumes:
+      - ./initdb:/docker-entrypoint-initdb.d # Initialization scripts
+      - ./.docker/data/mysql:/var/lib/mysql # Persist MySQL data files
+      - ./.docker/logs/mysql:/var/log/mysql # MySQL log files
+
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: fox-api-phpmyadmin
+    ports:
+      - "8090:80" # Host port 8082 maps to container port 80
+    links:
+      - database
+    environment:
+      PMA_HOST: database
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: fox
+      MYSQL_PASSWORD: fox
+      UPLOAD_LIMIT: 100M
+      MEMORY_LIMIT: 100M
+    volumes:
+      - /sessions
+      - ./.docker/config/php/php.ini:/usr/local/etc/php/conf.d/php-phpmyadmin.ini
+
+  swagger:
+    image: swaggerapi/swagger-ui
+    ports:
+      - "8081:8080" # Host port 8081 maps to container port 8080
+    environment:
+      URL: http://localhost:8080/v1/openapi.yml
