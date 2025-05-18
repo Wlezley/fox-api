@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models\Entity;
 
+use App\Models\Validator\DateValidator;
 use DateTime;
 
 final class ProductEntity
@@ -20,9 +21,7 @@ final class ProductEntity
      * Creates a new ProductEntity instance from a database row.
      *
      * @param array<string,mixed> $row Fetched row from the database.
-     * @return ProductEntity
-     *
-     * @todo Throw ProductException If DateTime parsing is later added and fails (?)
+     * @return ProductEntity New ProductEntity instance.
      */
     public static function fromDatabaseRow(array $row): self
     {
@@ -31,8 +30,12 @@ final class ProductEntity
         $product->name = (string) ($row['name'] ?? '');
         $product->price = (float) ($row['price'] ?? 0);
         $product->stock = (int) ($row['stock'] ?? 0);
-        $product->created_at = $row['created_at'] ?? null; // TODO: Validate DateTime input format
-        $product->updated_at = $row['updated_at'] ?? null; // TODO: Validate DateTime input format
+        $product->created_at = isset($row['created_at'])
+            ? DateValidator::getValidDateTime($row['created_at'], 'created_at')
+            : null;
+        $product->updated_at = isset($row['updated_at'])
+            ? DateValidator::getValidDateTime($row['updated_at'], 'updated_at')
+            : null;
         $product->deleted = (bool) ($row['deleted'] ?? false);
 
         return $product;
