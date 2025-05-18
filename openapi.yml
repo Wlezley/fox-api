@@ -2,46 +2,275 @@ openapi: '3.0.3'
 info:
   title: FOX API
   version: '1.0'
+  description: REST API for managing products and their history.
 
 servers:
   - url: http://localhost/fox-api/v1
 
+paths:
+  /product:
+    get:
+      summary: Get product by ID
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Product ID
+      responses:
+        '200':
+          description: Product found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+    post:
+      summary: Create a new product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductInput'
+      responses:
+        '200':
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '400':
+          $ref: '#/components/responses/Error'
+    patch:
+      summary: Update product partially
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Product ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductInput'
+      responses:
+        '200':
+          description: Product updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+    put:
+      summary: Insert or update product
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+          required: false
+          description: Product ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductInput'
+      responses:
+        '200':
+          description: Product inserted or updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '400':
+          $ref: '#/components/responses/Error'
+    delete:
+      summary: Soft delete product
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Product ID
+      responses:
+        '200':
+          description: Product marked as deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      affected_rows:
+                        type: integer
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+
+  /products:
+    get:
+      summary: List products with filtering and pagination
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+          required: false
+          description: Filter by product name (partial match)
+        - in: query
+          name: minPrice
+          schema:
+            type: number
+            format: float
+          required: false
+          description: Minimum price
+        - in: query
+          name: maxPrice
+          schema:
+            type: number
+            format: float
+          required: false
+          description: Maximum price
+        - in: query
+          name: minStock
+          schema:
+            type: integer
+          required: false
+          description: Minimum stock
+        - in: query
+          name: maxStock
+          schema:
+            type: integer
+          required: false
+          description: Maximum stock
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 50
+            minimum: 1
+            maximum: 100
+          required: false
+          description: Max number of products to return
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+          required: false
+          description: Number of products to skip
+      responses:
+        '200':
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+        '400':
+          $ref: '#/components/responses/Error'
+
+  /product/history:
+    get:
+      summary: Get product history by product ID
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Product ID
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 50
+            minimum: 1
+            maximum: 100
+          required: false
+          description: Max number of history records to return
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+          required: false
+          description: Number of records to skip
+      responses:
+        '200':
+          description: Product history
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProductHistory'
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+
 components:
   schemas:
-    product_data:
+    Product:
       type: object
       properties:
         id:
-          description: 'Product ID'
           type: integer
-          minimum: 0
-          exclusiveMinimum: true
         name:
-          description: 'Product name'
           type: string
           maxLength: 255
         price:
-          description: 'Price per piece'
           type: number
           format: float
           minimum: 0
         stock:
-          description: 'Number of pieces in stock'
           type: integer
           minimum: 0
         created_at:
-          description: 'Product creation date'
           type: string
           format: date-time
+          nullable: true
         updated_at:
-          description: 'Product last modified date'
           type: string
           format: date-time
           nullable: true
         deleted:
-          description: 'Flag indicating deleted item'
           type: boolean
-    product_input:
+    ProductInput:
       type: object
       required:
         - name
@@ -58,9 +287,48 @@ components:
           type: integer
           minimum: 0
           default: 0
+    ProductResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        data:
+          $ref: '#/components/schemas/Product'
+        error:
+          type: object
+          nullable: true
+          properties:
+            code:
+              type: integer
+            message:
+              type: string
+    ProductHistory:
+      type: object
+      properties:
+        id:
+          type: integer
+        product_id:
+          type: integer
+        name:
+          type: string
+          maxLength: 255
+        price:
+          type: number
+          format: float
+          minimum: 0
+          default: 0
+        stock:
+          type: integer
+          minimum: 0
+          default: 0
+        changed_at:
+          type: string
+          format: date-time
+          nullable: true
+
   responses:
-    error:
-      description: 'Error'
+    Error:
+      description: Error response
       content:
         application/json:
           schema:
@@ -68,6 +336,7 @@ components:
             properties:
               status:
                 type: string
+                example: error
               error:
                 type: object
                 properties:
@@ -75,227 +344,3 @@ components:
                     type: integer
                   message:
                     type: string
-    status:
-      description: 'Status'
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              status:
-                type: string
-
-paths:
-  /:
-    get:
-      responses:
-        '200':
-          description: 'TEST'
-
-  /product:
-    get:
-      description: 'Get product by ID'
-      parameters:
-        - name: 'id'
-          in: query
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: 'Product found'
-          $ref: "#/components/responses/status"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/product_data"
-        '400':
-          description: 'Product ID is missing'
-          $ref: "#/components/responses/error"
-        '404':
-          description: 'Product not found'
-          $ref: "#/components/responses/error"
-    post:
-      description: 'Create product'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/product_input"
-      responses:
-        '200':
-          description: 'Successfully created a new product'
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/product_data"
-        '400':
-          $ref: "#/components/responses/error"
-    patch:
-      description: 'Update product'
-      parameters:
-        - name: 'id'
-          in: query
-          required: false
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/product_input"
-      responses:
-        '200':
-          description: 'Successfully created a new product'
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/product_data"
-        '400':
-          $ref: "#/components/responses/error"
-    put:
-      description: 'Update product if exists, otherwise Create new product'
-      parameters:
-        - name: 'id'
-          in: query
-          required: false
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/product_input"
-      responses:
-        '200':
-          description: 'Successfully created a new product'
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/product_data"
-        '400':
-          $ref: "#/components/responses/error"
-    delete:
-      description: 'Delete product by ID'
-      parameters:
-        - name: 'id'
-          in: query
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: 'Product deleted'
-          $ref: "#/components/responses/status"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/product_data"
-        '400':
-          description: 'Product ID is missing'
-          $ref: "#/components/responses/error"
-        '404':
-          description: 'Product not found'
-          $ref: "#/components/responses/error"
-
-  /products:
-    get:
-      description: 'Get product list according to limit and offset with filtering (optional)'
-      parameters:
-        - name: 'limit'
-          in: query
-          description: 'Limits the number of items on a page'
-          schema:
-            type: integer
-            default: 50
-            maximum: 100
-        - name: 'offset'
-          in: query
-          description: 'Offset of the first row to return'
-          schema:
-            type: integer
-            default: 0
-        - name: 'name'
-          in: query
-          description: 'Search for part of name'
-          schema:
-            type: string
-            minLength: 3
-            maxLength: 255
-        - name: 'minPrice'
-          in: query
-          description: 'Minimal price'
-          schema:
-            type: number
-            format: float
-            minimum: 0
-        - name: 'maxPrice'
-          in: query
-          description: 'Maximal price'
-          schema:
-            type: number
-            format: float
-        - name: 'minStock'
-          in: query
-          description: 'Minimal stock'
-          schema:
-            type: integer
-            minimum: 0
-        - name: 'maxStock'
-          in: query
-          description: 'Maximal stock'
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: 'List of products'
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/product_data"
-        '404':
-          description: 'No products are found'
-          $ref: "#/components/responses/error"
-
-  /product/history:
-    get:
-      description: 'Get list of product history by product ID'
-      parameters:
-        - name: 'id'
-          in: query
-          required: true
-          schema:
-            type: integer
-        - name: 'limit'
-          in: query
-          description: 'Limits the number of items on a page'
-          schema:
-            type: integer
-            default: 50
-            minimum: 1
-            maximum: 100
-        - name: 'offset'
-          in: query
-          description: 'Offset of the first row to return'
-          schema:
-            type: integer
-            default: 0
-      responses:
-        '200':
-          description: 'Product found'
-          $ref: "#/components/responses/status"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/product_data"
-        '400':
-          description: 'Product ID is missing'
-          $ref: "#/components/responses/error"
-        '404':
-          description: 'Product does not have history records or not found'
-          $ref: "#/components/responses/error"
