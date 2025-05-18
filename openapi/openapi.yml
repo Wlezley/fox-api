@@ -1,11 +1,12 @@
-openapi: '3.0.3'
+openapi: 3.1.0
 info:
   title: FOX API
-  version: '1.0'
+  version: 1.0.0
   description: REST API for managing products and their history.
 
 servers:
-  - url: http://localhost/fox-api/v1
+  - url: http://localhost:8080/v1
+  - url: http://localhost/v1
 
 paths:
   /product:
@@ -261,13 +262,15 @@ components:
           type: integer
           minimum: 0
         created_at:
-          type: string
+          type:
+            - string
+            - "null"
           format: date-time
-          nullable: true
         updated_at:
-          type: string
+          type:
+            - string
+            - "null"
           format: date-time
-          nullable: true
         deleted:
           type: boolean
     ProductInput:
@@ -295,8 +298,9 @@ components:
         data:
           $ref: '#/components/schemas/Product'
         error:
-          type: object
-          nullable: true
+          type:
+            - object
+            - "null"
           properties:
             code:
               type: integer
@@ -322,9 +326,10 @@ components:
           minimum: 0
           default: 0
         changed_at:
-          type: string
+          type:
+            - string
+            - "null"
           format: date-time
-          nullable: true
 
   responses:
     Error:

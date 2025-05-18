@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\ApiModule\Presenters;
 
 use Nette;
-use Nette\Http\Response;
 use Tracy\Debugger;
 
 final class DefaultPresenter extends Nette\Application\UI\Presenter
@@ -15,17 +14,21 @@ final class DefaultPresenter extends Nette\Application\UI\Presenter
         Debugger::$showBar = false;
     }
 
-    public function actionDefault(): void
+    public function actionOpenapiYaml(): void
     {
-        // Test
-        $payload = [
-            'status' => 'ok',
-            'response' => [
-                'code' => Response::S200_OK,
-                'message' => 'Test api response'
-            ]
-        ];
+        $file = __DIR__ . '/../../../openapi/openapi.yml';
+        $this->getHttpResponse()->setContentType('text/yaml');
+        $this->sendResponse(new \Nette\Application\Responses\TextResponse(file_get_contents($file)));
+    }
 
-        $this->sendJson($payload);
+    public function actionOpenapiJson(): void
+    {
+        $file = __DIR__ . '/../../../openapi/openapi.yml';
+        $yaml = file_get_contents($file);
+        $array = \Symfony\Component\Yaml\Yaml::parse($yaml);
+        $json = json_encode($array, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+
+        $this->getHttpResponse()->setContentType('application/json');
+        $this->sendResponse(new \Nette\Application\Responses\TextResponse($json));
     }
 }

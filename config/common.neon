@@ -17,7 +17,9 @@ database:
 
 http:
     headers:
-        X-Powered-By: 'Fox API v1'
+        Access-Control-Allow-Origin: '*'
+        Access-Control-Allow-Methods: '*'
+        Access-Control-Allow-Headers: '*'
 
 tracy:
     logSeverity: E_ERROR

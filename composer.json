@@ -22,7 +22,8 @@
     "nette/robot-loader": "^4.0",
     "nette/security": "^3.2",
     "nette/utils": "^4.0",
-    "tracy/tracy": "^2.10"
+    "tracy/tracy": "^2.10",
+    "symfony/yaml": "^7.2"
   },
   "require-dev": {
     "nette/tester": "^2.5",

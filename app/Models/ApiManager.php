@@ -117,7 +117,8 @@ class ApiManager
      */
     protected function processHEAD(): bool
     {
-        return false;
+        $this->httpResponse->setCode(Response::S200_OK);
+        return true;
     }
 
     /**
@@ -165,7 +166,8 @@ class ApiManager
      */
     protected function processOPTIONS(): bool
     {
-        return false;
+        $this->setError(Response::S200_OK, 'Allowed methods: ' . implode(', ', $this->allowedMethods));
+        return true;
     }
 
     // #################################
