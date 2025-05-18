@@ -17,10 +17,12 @@ final class ProductEntity
     public bool $deleted = false;
 
     /**
-     * Create an instance from the database record
+     * Creates a new ProductEntity instance from a database row.
      *
-     * @param array<string,mixed> $row Fetched row from the database
+     * @param array<string,mixed> $row Fetched row from the database.
      * @return ProductEntity
+     *
+     * @todo Throw ProductException If DateTime parsing is later added and fails (?)
      */
     public static function fromDatabaseRow(array $row): self
     {
@@ -37,9 +39,9 @@ final class ProductEntity
     }
 
     /**
-     * Returns prepared data for database INSERT/UPDATE
+     * Prepares the entity data for a database INSERT or UPDATE.
      *
-     * @return array<string,mixed> Prepared data for database INSERT/UPDATE
+     * @return array<string,mixed> Prepared associative array for database operations.
      */
     public function toDatabaseRow(): array
     {
@@ -55,9 +57,9 @@ final class ProductEntity
     }
 
     /**
-     * Returns prepared data for JSON response
+     * Converts the entity to an array suitable for JSON serialization.
      *
-     * @return array<string,mixed> Prepared data for JSON response
+     * @return array<string,mixed> Prepared associative array for API response.
      */
     public function toArray(): array
     {
@@ -73,10 +75,10 @@ final class ProductEntity
     }
 
     /**
-     * Create an instance from the database record
+     * Updates entity fields based on input data and returns the updated entity.
      *
-     * @param array<string,mixed> $data Data to update
-     * @return ProductEntity
+     * @param array<string,mixed> $data Partial data to update the entity.
+     * @return ProductEntity Updated entity instance.
      */
     public function prepareForUpdate(array $data): self
     {

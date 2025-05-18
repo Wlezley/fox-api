@@ -6,6 +6,7 @@ namespace App\Models\Repository;
 
 use App\Models\Entity\ProductEntity;
 use App\Models\Exception\ProductException;
+use App\Models\Exception\ProductHistoryException;
 use Nette\Http\Response;
 
 final class ProductRepository extends BaseRepository
@@ -13,12 +14,12 @@ final class ProductRepository extends BaseRepository
     public const TABLE_NAME = 'product';
 
     /**
-     * Get product by ID
+     * Retrieves a product by its ID.
      *
-     * @param int $productId Product ID
+     * @param int $productId Product ID.
+     * @return ProductEntity Product data.
      *
-     * @return ProductEntity Product data
-     * @throws ProductException If product not found
+     * @throws ProductException If the product is not found.
      */
     public function getProductById(int $productId): ProductEntity
     {
@@ -34,11 +35,12 @@ final class ProductRepository extends BaseRepository
     }
 
     /**
-     * Insert new product
+     * Inserts a new product into the database and returns the complete entity.
      *
-     * @param ProductEntity $product Product data
+     * Automatically creates a product history entry.
      *
-     * @return ProductEntity Product data with ID of new product
+     * @param ProductEntity $product Product data.
+     * @return ProductEntity Product data with the assigned ID.
      */
     public function insert(ProductEntity $product): ProductEntity
     {
@@ -58,12 +60,14 @@ final class ProductRepository extends BaseRepository
     }
 
     /**
-     * Product update
+     * Updates an existing product in the database and returns the updated entity.
      *
-     * @param ProductEntity $product Product data
+     * Automatically creates a product history entry if data was modified.
      *
-     * @return ProductEntity Data of updated product
-     * @throws ProductException If product entity does not have set ID
+     * @param ProductEntity $product Product entity to update.
+     * @return ProductEntity Updated product entity.
+     *
+     * @throws ProductException If the product ID is not set.
      */
     public function update(ProductEntity $product): ProductEntity
     {
@@ -89,12 +93,11 @@ final class ProductRepository extends BaseRepository
     }
 
     /**
-     * Check if product exists
+     * Checks whether a product exists in the database.
      *
-     * @param int $productId Product ID
-     * @param bool $includeDeleted Whether to include products marked as deleted (default: false)
-     *
-     * @return bool True if product exist, otherwise false
+     * @param int $productId Product ID.
+     * @param bool $includeDeleted Whether to include soft-deleted products (default: false).
+     * @return bool True if the product exists, otherwise false.
      */
     public function exists(int $productId, bool $includeDeleted = false): bool
     {
@@ -110,14 +113,14 @@ final class ProductRepository extends BaseRepository
     }
 
     /**
-     * Product delete
+     * Permanently deletes a product by its ID.
      *
-     * @param int $productId Product ID
+     * @param int $productId Product ID.
+     * @return int Number of affected rows.
      *
-     * @return int Number of affected rows
-     * @throws ProductException If product not found
+     * @throws ProductException If the product does not exist.
      *
-     * @todo Delete also rows from the price_history table?
+     * @todo Also delete related entries from the product_history table (?)
      */
     public function delete(int $productId): int
     {
@@ -131,13 +134,15 @@ final class ProductRepository extends BaseRepository
     }
 
     /**
-     * Set product 'deleted' status (eg. 'soft delete')
+     * Marks a product as deleted or restores it (soft delete).
      *
-     * @param int $productId Product ID
-     * @param bool $deleted Deleted flag
+     * This does not remove the product from the database but marks it as deleted.
      *
-     * @return int Number of affected rows
-     * @throws ProductException If product not found
+     * @param int $productId Product ID.
+     * @param bool $deleted Whether the product should be marked as deleted.
+     * @return int Number of affected rows.
+     *
+     * @throws ProductException If the product does not exist.
      */
     public function setDeleted(int $productId, bool $deleted): int
     {
@@ -151,20 +156,34 @@ final class ProductRepository extends BaseRepository
     }
 
     /**
-     * Retrieves a list of products with optional filter and pagination
+     * Retrieves a list of products with optional filtering and pagination.
      *
-     * @param int $limit Number of results to return (default: 50)
-     * @param int $offset Offset for pagination (default: 0)
-     * @param array<string,string> $filter Optional filter query parts for WHERE clause (default: empty)
+     * @param int $limit Maximum number of products to return (default: 50).
+     * @param int $offset Offset for pagination (default: 0).
+     * @param array<string,string> $filter Optional filter conditions for WHERE clause.
+     * @return array<array<string,mixed>> List of products formatted as associative arrays.
      *
-     * @return array<string,mixed>[] List of products
-     * @throws ProductException If no products are found
+     * @throws ProductException If the limit or offset is out of range, or if no products are found.
      */
     public function getList(int $limit = 50, int $offset = 0, array $filter = []): array
     {
+
+        if (filter_var($limit, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 100]]) === false) {
+            throw new ProductException(
+                "The limit is not in the allowed range; an integer between 1 and 100 is expected.",
+                Response::S400_BadRequest
+            );
+        }
+        if (filter_var($offset, FILTER_VALIDATE_INT, ['options' => ['min_range' => 0]]) === false) {
+            throw new ProductException(
+                "The offset is not in the allowed range; a non-negative integer is expected.",
+                Response::S400_BadRequest
+            );
+        }
+
         $query = $this->db->table(self::TABLE_NAME)
             ->limit($limit, $offset)
-            ->whereOr($filter)
+            ->where($filter)
             ->order('id ASC');
 
         $data = $query->fetchAll();
@@ -182,11 +201,10 @@ final class ProductRepository extends BaseRepository
     }
 
     /**
-     * Get count of products by optional filter parameter
+     * Returns the total number of products, optionally filtered.
      *
-     * @param array<string,string> $filter Optional filter query parts for WHERE clause (default: empty)
-     *
-     * @return int Count of products
+     * @param array<string,string> $filter Optional filter conditions for WHERE clause.
+     * @return int Count of matching products.
      */
     public function getCount(array $filter = []): int
     {

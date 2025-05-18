@@ -14,11 +14,10 @@ final class ProductHistoryRepository extends BaseRepository
     public const TABLE_NAME = 'product_history';
 
     /**
-     * Create new product history record
+     * Creates a new product history record based on the current product data.
      *
-     * @param ProductEntity $product Product data
-     *
-     * @return int Product history ID
+     * @param ProductEntity $product Product data used for history snapshot.
+     * @return int ID of the newly created product history record.
      */
     public function createFromProduct(ProductEntity $product): int
     {
@@ -31,11 +30,10 @@ final class ProductHistoryRepository extends BaseRepository
     }
 
     /**
-     * Check if product have history records
+     * Checks whether the product has any associated history records.
      *
-     * @param int $productId Product ID
-     *
-     * @return bool True if product exist, otherwise false
+     * @param int $productId Product ID.
+     * @return bool True if history records exist for the given product, otherwise false.
      */
     public function exists(int $productId): bool
     {
@@ -48,23 +46,27 @@ final class ProductHistoryRepository extends BaseRepository
     }
 
     /**
-     * Retrieves a list of product history records with optional pagination
+     * Retrieves a list of product history records for a given product with optional pagination.
      *
-     * @param int $productId Product ID
-     * @param int $limit Number of results to return (min: 1, max: 100, default: 50)
-     * @param int $offset Offset for pagination (default: 0)
+     * @param int $productId Product ID to retrieve history for.
+     * @param int $limit Maximum number of records to return (min: 1, max: 100, default: 50).
+     * @param int $offset Offset for pagination (default: 0).
      *
-     * @return array<string,mixed>[] List of product history records
+     * @return array<array<string,mixed>> List of product history records as associative arrays.
      *
-     * @throws ProductHistoryException If limit value is out of range
-     * @throws ProductHistoryException If offset is greater than the number of history records
-     * @throws ProductHistoryException If product not found or doesn't have any history records yet
+     * @throws ProductHistoryException If the limit or offset is out of range, or if no history records are found.
      */
     public function getHistoryByProductId(int $productId, int $limit = 50, int $offset = 0): array
     {
         if (filter_var($limit, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 100]]) === false) {
             throw new ProductHistoryException(
                 "The limit is not in the allowed range; an integer between 1 and 100 is expected.",
+                Response::S400_BadRequest
+            );
+        }
+        if (filter_var($offset, FILTER_VALIDATE_INT, ['options' => ['min_range' => 0]]) === false) {
+            throw new ProductHistoryException(
+                "The offset is not in the allowed range; a non-negative integer is expected.",
                 Response::S400_BadRequest
             );
         }
@@ -100,11 +102,10 @@ final class ProductHistoryRepository extends BaseRepository
     }
 
     /**
-     * Get count of product history records by product ID
+     * Returns the number of history records for a given product.
      *
-     * @param int $productId Product ID
-     *
-     * @return int Count of product history records
+     * @param int $productId Product ID.
+     * @return int Count of history records associated with the product.
      */
     public function getCount(int $productId): int
     {

@@ -9,6 +9,11 @@ use Nette;
 use Nette\Database\Explorer;
 use Tracy\Debugger;
 
+/**
+ * Presenter for handling the /v1/product API endpoint.
+ *
+ * Uses ProductManager to process HTTP requests and returns JSON responses.
+ */
 final class ProductPresenter extends Nette\Application\UI\Presenter
 {
     /** @var Explorer @inject */

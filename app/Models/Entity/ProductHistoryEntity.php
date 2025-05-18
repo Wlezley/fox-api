@@ -16,10 +16,12 @@ final class ProductHistoryEntity
     public ?DateTime $changed_at = null;
 
     /**
-     * Create an instance from the database record
+     * Creates a new ProductHistoryEntity instance from a database row.
      *
-     * @param array<string,mixed> $row Fetched row from the database
+     * @param array<string,mixed> $row Fetched row from the database.
      * @return ProductHistoryEntity
+     *
+     * @todo Throw ProductHistoryException If DateTime parsing is later added and fails (?)
      */
     public static function fromDatabaseRow(array $row): self
     {
@@ -36,9 +38,9 @@ final class ProductHistoryEntity
     }
 
     /**
-     * Create an instance from the product entity
+     * Creates a ProductHistoryEntity instance from a ProductEntity object.
      *
-     * @param ProductEntity $product Product data
+     * @param ProductEntity $product Product data used to initialize the history entity.
      * @return ProductHistoryEntity
      */
     public static function fromProductEntity(ProductEntity $product): self
@@ -54,9 +56,9 @@ final class ProductHistoryEntity
     }
 
     /**
-     * Returns prepared data for database INSERT/UPDATE
+     * Prepares the entity data for a database INSERT or UPDATE.
      *
-     * @return array<string,mixed> Prepared data for database INSERT/UPDATE
+     * @return array<string,mixed> Prepared associative array for database operations.
      */
     public function toDatabaseRow(): array
     {
@@ -71,9 +73,9 @@ final class ProductHistoryEntity
     }
 
     /**
-     * Returns prepared data for JSON response
+     * Converts the entity to an array suitable for JSON serialization.
      *
-     * @return array<string,mixed> Prepared data for JSON response
+     * @return array<string,mixed> Prepared associative array for API response.
      */
     public function toArray(): array
     {

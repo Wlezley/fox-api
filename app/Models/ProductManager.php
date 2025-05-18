@@ -12,6 +12,11 @@ use Nette\Http\Response;
 use Nette\Utils\Json;
 use Nette\Utils\JsonException;
 
+/**
+ * API manager for handling /product/ related REST operations.
+ *
+ * Supports GET, POST, PATCH, PUT and DELETE HTTP methods.
+ */
 final class ProductManager extends ApiManager
 {
     protected array $allowedMethods = [
@@ -22,12 +27,22 @@ final class ProductManager extends ApiManager
         Request::Delete
     ];
 
+    /**
+     * @param Request $httpRequest Current HTTP request
+     * @param Response $httpResponse Current HTTP response
+     * @param ProductRepository $productRepo Product repository instance
+     */
     public function __construct(
         public Request $httpRequest,
         public Response $httpResponse,
         public ProductRepository $productRepo
     ) {}
 
+    /**
+     * Handles HTTP GET request to retrieve a product by ID.
+     *
+     * @return bool True on success, false on failure (e.g. invalid or missing ID)
+     */
     protected function processGET(): bool
     {
         $id = $this->httpRequest->getQuery('id');
@@ -51,6 +66,15 @@ final class ProductManager extends ApiManager
         return false;
     }
 
+    /**
+     * Handles HTTP POST request to insert a new product.
+     *
+     * Expects a valid JSON body with required product data.
+     *
+     * @return bool True on success, false on validation or JSON error
+     *
+     * @todo Validate JSON post data values ...
+     */
     protected function processPOST(): bool
     {
         try {
@@ -63,7 +87,6 @@ final class ProductManager extends ApiManager
             return false;
         }
 
-        // TODO: Validate post data values ...
         if (empty($data)) {
             $this->setError(
                 Response::S400_BadRequest,
@@ -78,6 +101,13 @@ final class ProductManager extends ApiManager
         return true;
     }
 
+    /**
+     * Handles HTTP PATCH request to update a product partially.
+     *
+     * Requires a valid ID in query parameters and JSON body with updated fields.
+     *
+     * @return bool True on success, false on error
+     */
     protected function processPATCH(): bool
     {
         $id = $this->httpRequest->getQuery('id');
@@ -110,6 +140,14 @@ final class ProductManager extends ApiManager
         return false;
     }
 
+    /**
+     * Handles HTTP PUT request to insert or update a product.
+     *
+     * If the product with given ID exists, updates it (PATCH).
+     * Otherwise, creates a new one (POST).
+     *
+     * @return bool True on success, false on error
+     */
     protected function processPUT(): bool
     {
         $id = $this->httpRequest->getQuery('id');
@@ -121,6 +159,13 @@ final class ProductManager extends ApiManager
         }
     }
 
+    /**
+     * Handles HTTP DELETE request to mark a product as deleted (soft delete).
+     *
+     * Requires 'id' query parameter.
+     *
+     * @return bool True on success, false on failure
+     */
     protected function processDELETE(): bool
     {
         $id = $this->httpRequest->getQuery('id');
