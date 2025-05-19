@@ -27,7 +27,7 @@ services:
     container_name: fox-api-mariadb106
     restart: always
     ports:
-      - "3308:3306" # Host port 3308 maps to container port 3306
+      - "3360:3306" # Host port 3360 maps to container port 3306
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: fox-api
@@ -42,7 +42,7 @@ services:
     image: phpmyadmin
     container_name: fox-api-phpmyadmin
     ports:
-      - "8090:80" # Host port 8082 maps to container port 80
+      - "8090:80" # Host port 8090 maps to container port 80
     links:
       - database
     environment:

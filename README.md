@@ -1,12 +1,16 @@
 # Foxy Store 🦊 REST API
 
-This project implements a simple REST API for managing products (fruits, vegetables, nuts), including product history tracking. The API is built using the [Nette](https://nette.org/) framework and uses a MariaDB database. The architecture is divided into logical *managers*, each representing a specific REST endpoint.
+This project implements a simple REST API for managing nature products (e.g. fruits, vegetables, nuts), including product history tracking (price changes, stock, etc..). Simply everything what a fox in the forest needs to start an e-commerce store. 😄
+
+The API is built using the [Nette](https://nette.org/) framework and uses a MariaDB database. The architecture is divided into logical *managers*, each representing a specific REST endpoint.
 
 ## ✨ Features
 
-* Product listing with filtering and pagination
+* Add new products and edit them
+* Product list optional filtered by price, items in stock and name
 * Product detail by ID
 * Product history tracking
+* Pagination support for lists
 * OpenAPI 3.1 specification
 * Dockerized development environment
 

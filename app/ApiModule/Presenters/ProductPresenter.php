@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\ApiModule\Presenters;
 
+use App\Models\ProductHistoryManager;
 use App\Models\ProductManager;
 use Nette;
 use Nette\Database\Explorer;
@@ -20,7 +21,8 @@ final class ProductPresenter extends Nette\Application\UI\Presenter
     public Explorer $db;
 
     public function __construct(
-        public ProductManager $productManager
+        public ProductManager $productManager,
+        public ProductHistoryManager $productHistoryManager
     ) {
         Debugger::$showBar = false;
     }
@@ -29,5 +31,11 @@ final class ProductPresenter extends Nette\Application\UI\Presenter
     {
         $this->productManager->processRequest();
         $this->sendJson($this->productManager->getDataForResponse());
+    }
+
+    public function actionHistory(): void
+    {
+        $this->productHistoryManager->processRequest();
+        $this->sendJson($this->productHistoryManager->getDataForResponse());
     }
 }

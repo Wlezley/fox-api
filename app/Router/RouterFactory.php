@@ -15,8 +15,8 @@ final class RouterFactory
     {
         $router = new RouteList;
         $router->addRoute('v1/product', 'Product:default');
+        $router->addRoute('v1/product/history', 'Product:history');
         $router->addRoute('v1/products', 'ProductList:default');
-        $router->addRoute('v1/product/history', 'ProductHistory:default');
         $router->addRoute('v1/openapi.yml', 'Default:openapiYaml');
         $router->addRoute('v1/openapi.json', 'Default:openapiJson');
         return $router;
