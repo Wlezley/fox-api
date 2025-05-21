@@ -53,27 +53,27 @@ The complete API specification is available in the [`openapi/openapi.yml`](opena
 
 ## 🔄 API Endpoints
 
-### `GET /v1/product`
+### `GET /product`
 
 Returns a product detail by ID (e.g., `?id=123`).
 
-### `POST /v1/product`
+### `POST /product`
 
 Creates a new product.
 
-### `PATCH /v1/product`
+### `PATCH /product`
 
 Partially updates an existing product (e.g., `?id=123`).
 
-### `PUT /v1/product`
+### `PUT /product`
 
 Upserts a product (insert or update, `?id=123` optional).
 
-### `DELETE /v1/product`
+### `DELETE /product`
 
 Soft deletes a product (e.g., `?id=123`).
 
-### `GET /v1/products`
+### `GET /products`
 
 Returns a list of products with support for filtering and pagination:
 
@@ -82,9 +82,15 @@ Returns a list of products with support for filtering and pagination:
 * `minStock`, `maxStock` – stock filtering
 * `limit`, `offset` – pagination control
 
-### `GET /v1/product/history`
+### `GET /product/history`
 
 Returns the history of a product by ID (e.g., `?id=123`) with support for pagination:
+
+* `limit`, `offset` – pagination control
+
+### `GET /product/history/price`
+
+Returns the price history of a product by ID (e.g., `?id=123`) with support for pagination:
 
 * `limit`, `offset` – pagination control
 
