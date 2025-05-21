@@ -1,0 +1,66 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Models\ApiManager;
+
+use App\Models\ApiException\ProductHistoryException;
+use App\Models\Repository\ProductHistoryRepository;
+use Nette\Http\Request;
+use Nette\Http\Response;
+
+/**
+ * API manager for handling /product/history/ related REST operations.
+ *
+ * Supports only the HTTP GET method.
+ */
+final class ProductHistoryManager extends ApiManager
+{
+    protected array $allowedMethods = [
+        Request::Get
+    ];
+
+    /**
+     * @param Request $httpRequest Current HTTP request
+     * @param Response $httpResponse Current HTTP response
+     * @param ProductHistoryRepository $productHistoryRepo Product history repository instance
+     */
+    public function __construct(
+        public Request $httpRequest,
+        public Response $httpResponse,
+        public ProductHistoryRepository $productHistoryRepo
+    ) {}
+
+    /**
+     * Handles HTTP GET request to retrieve a product history by product ID.
+     *
+     * Supports optional pagination via `limit` and `offset` query parameters.
+     *
+     * @return bool True on success, false on failure (e.g. missing or invalid ID)
+     */
+    protected function processGET(): bool
+    {
+        $id = $this->httpRequest->getQuery('id');
+
+        if (!$id) {
+            $this->setError(
+                Response::S400_BadRequest,
+                "Required parameter 'id' is missing"
+            );
+            return false;
+        } else {
+            try {
+                $limit = $this->httpRequest->getQuery('limit') ?? 50;
+                $offset = $this->httpRequest->getQuery('offset') ?? 0;
+
+                $this->data = $this->productHistoryRepo
+                    ->getHistoryByProductId((int) $id, (int) $limit, (int) $offset);
+                return true;
+            } catch (ProductHistoryException $e) {
+                $this->setError($e->getCode(), $e->getMessage());
+            }
+        }
+
+        return false;
+    }
+}

@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\ApiModule\Presenters;
 
-use App\Models\ProductHistoryManager;
-use App\Models\ProductManager;
+use App\Models\ApiManager\ProductHistoryManager;
+use App\Models\ApiManager\ProductHistoryPriceManager;
+use App\Models\ApiManager\ProductManager;
 use Nette;
 use Nette\Database\Explorer;
 use Tracy\Debugger;
@@ -17,7 +18,8 @@ final class ProductPresenter extends Nette\Application\UI\Presenter
 
     public function __construct(
         public ProductManager $productManager,
-        public ProductHistoryManager $productHistoryManager
+        public ProductHistoryManager $productHistoryManager,
+        public ProductHistoryPriceManager $productHistoryPriceManager
     ) {
         Debugger::$showBar = false;
     }
@@ -42,5 +44,16 @@ final class ProductPresenter extends Nette\Application\UI\Presenter
     {
         $this->productHistoryManager->processRequest();
         $this->sendJson($this->productHistoryManager->getDataForResponse());
+    }
+
+    /**
+     * Handles the price history action for the /product/history/price endpoint.
+     *
+     * Processes the request using ProductHistoryPriceManager and sends a JSON response.
+     */
+    public function actionHistoryPrice(): void
+    {
+        $this->productHistoryPriceManager->processRequest();
+        $this->sendJson($this->productHistoryPriceManager->getDataForResponse());
     }
 }

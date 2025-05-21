@@ -6,7 +6,7 @@ namespace App\Models\Repository;
 
 use App\Models\Entity\ProductEntity;
 use App\Models\Entity\ProductHistoryEntity;
-use App\Models\Exception\ProductHistoryException;
+use App\Models\ApiException\ProductHistoryException;
 use Nette\Http\Response;
 
 final class ProductHistoryRepository extends BaseRepository

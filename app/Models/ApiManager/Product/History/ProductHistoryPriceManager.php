@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Models;
+namespace App\Models\ApiManager;
 
-use App\Models\Exception\ProductHistoryException;
+use App\Models\ApiException\ProductHistoryException;
 use App\Models\Repository\ProductHistoryRepository;
 use Nette\Http\Request;
 use Nette\Http\Response;
 
 /**
- * API manager for handling /product/history/ related REST operations.
+ * API manager for handling /product/history/price/ related REST operations.
  *
  * Supports only the HTTP GET method.
  */
-final class ProductHistoryManager extends ApiManager
+final class ProductHistoryPriceManager extends ApiManager
 {
     protected array $allowedMethods = [
         Request::Get
@@ -32,7 +32,7 @@ final class ProductHistoryManager extends ApiManager
     ) {}
 
     /**
-     * Handles HTTP GET request to retrieve a product history by product ID.
+     * Handles HTTP GET request to retrieve a product price history by product ID.
      *
      * Supports optional pagination via `limit` and `offset` query parameters.
      *
@@ -53,8 +53,28 @@ final class ProductHistoryManager extends ApiManager
                 $limit = $this->httpRequest->getQuery('limit') ?? 50;
                 $offset = $this->httpRequest->getQuery('offset') ?? 0;
 
-                $this->data = $this->productHistoryRepo
+                $data = $this->productHistoryRepo
                     ->getHistoryByProductId((int) $id, (int) $limit, (int) $offset);
+
+                $proce_old = null;
+                $priceData = [];
+                foreach ($data as $item) {
+                    $price_changed = false;
+                    if ($item['price'] != $proce_old) {
+                        $price_changed = true;
+                    }
+
+                    $priceData[] = [
+                        'guid'=> $item['id'],
+                        'price' => $item['price'],
+                        'price_old' => $proce_old,
+                        'price_changed' => $price_changed,
+                        'changed_at' => $item['changed_at']
+                    ];
+
+                    $proce_old = $item['price'];
+                }
+                $this->data = $priceData;
                 return true;
             } catch (ProductHistoryException $e) {
                 $this->setError($e->getCode(), $e->getMessage());

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\ApiModule\Presenters;
 
-use App\Models\ProductListManager;
+use App\Models\ApiManager\ProductListManager;
 use Nette;
 use Nette\Database\Explorer;
 use Tracy\Debugger;

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Models\Repository;
 
 use App\Models\Entity\ProductEntity;
-use App\Models\Exception\ProductException;
+use App\Models\ApiException\ProductException;
 use Nette\Http\Response;
 
 final class ProductRepository extends BaseRepository

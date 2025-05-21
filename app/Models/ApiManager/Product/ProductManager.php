@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Models;
+namespace App\Models\ApiManager;
 
 use App\Models\Entity\ProductEntity;
-use App\Models\Exception\ProductException;
+use App\Models\ApiException\ProductException;
 use App\Models\Repository\ProductRepository;
 use App\Models\Validator\ProductInputValidator;
 use Nette\Http\Request;
