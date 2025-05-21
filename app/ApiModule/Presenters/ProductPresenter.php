@@ -10,11 +10,6 @@ use Nette;
 use Nette\Database\Explorer;
 use Tracy\Debugger;
 
-/**
- * Presenter for handling the /v1/product API endpoint.
- *
- * Uses ProductManager to process HTTP requests and returns JSON responses.
- */
 final class ProductPresenter extends Nette\Application\UI\Presenter
 {
     /** @var Explorer @inject */
@@ -27,12 +22,22 @@ final class ProductPresenter extends Nette\Application\UI\Presenter
         Debugger::$showBar = false;
     }
 
+    /**
+     * Handles the default action for the /product endpoint.
+     *
+     * Processes the request using ProductManager and sends a JSON response.
+     */
     public function actionDefault(): void
     {
         $this->productManager->processRequest();
         $this->sendJson($this->productManager->getDataForResponse());
     }
 
+    /**
+     * Handles the history action for the /product/history endpoint.
+     *
+     * Processes the request using ProductHistoryManager and sends a JSON response.
+     */
     public function actionHistory(): void
     {
         $this->productHistoryManager->processRequest();

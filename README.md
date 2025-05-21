@@ -25,16 +25,22 @@ The API is built using the [Nette](https://nette.org/) framework and uses a Mari
 
 ## 🚀 Running the Project (Docker)
 
-1. Copy `config/api.neon.docker` to `config/api.neon`
+1. Install packages with composer:
+
+```bash
+composer install
+```
+
+2. Copy `config/api.neon.docker` to `config/api.neon`
 3. Start the application:
 
 ```bash
 docker-compose up --build -d
 ```
 
-3. The application will be available at: `http://localhost:8080/v1`
-4. Swagger UI (OpenAPI docs): `http://localhost:8081`
-5. PhpMyAdmin: `http://localhost:8090`
+4. The application will be available at: `http://localhost:8080/v1`
+5. Swagger UI (OpenAPI docs): `http://localhost:8081`
+6. PhpMyAdmin: `http://localhost:8090`
 
 ## 📘️ OpenAPI Documentation
 

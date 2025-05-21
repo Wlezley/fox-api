@@ -3,15 +3,28 @@ info:
   title: FOX API
   version: 1.0.0
   description: REST API for managing products and their history.
+  contact:
+    name: API Support
+    url: https://www.example.com/support
+    email: support@example.com
 
 servers:
   - url: http://localhost:8080/v1
   - url: http://localhost/v1
 
+tags:
+  - name: Product
+  - name: Products
+  - name: Product History
+
 paths:
   /product:
     get:
       summary: Get product by ID
+      description: Returns detailed information about a product identified by its ID, including name, price, stock, and timestamps.
+      tags:
+        - Product
+      operationId: getProduct
       parameters:
         - in: query
           name: id
@@ -32,6 +45,10 @@ paths:
           $ref: '#/components/responses/Error'
     post:
       summary: Create a new product
+      description: Creates a new product record in the database. Requires a name; other fields default to zero.
+      tags:
+        - Product
+      operationId: postProduct
       requestBody:
         required: true
         content:
@@ -49,6 +66,10 @@ paths:
           $ref: '#/components/responses/Error'
     patch:
       summary: Update product partially
+      description: Updates selected fields of a product by ID. Only provided fields will be updated.
+      tags:
+        - Product
+      operationId: patchProduct
       parameters:
         - in: query
           name: id
@@ -75,6 +96,10 @@ paths:
           $ref: '#/components/responses/Error'
     put:
       summary: Insert or update product
+      description: Inserts a new product or updates an existing one based on the ID. If ID is not provided or does not exist, a new product is created.
+      tags:
+        - Product
+      operationId: putProduct
       parameters:
         - in: query
           name: id
@@ -99,6 +124,10 @@ paths:
           $ref: '#/components/responses/Error'
     delete:
       summary: Soft delete product
+      description: Marks a product as deleted in the database. The product data remains stored but is excluded from standard queries.
+      tags:
+        - Product
+      operationId: deleteProduct
       parameters:
         - in: query
           name: id
@@ -131,6 +160,10 @@ paths:
   /products:
     get:
       summary: List products with filtering and pagination
+      description: Returns a paginated list of products with optional filters for name, price range, and stock range. Supports limit and offset for pagination.
+      tags:
+        - Products
+      operationId: getProducts
       parameters:
         - in: query
           name: name
@@ -201,6 +234,10 @@ paths:
   /product/history:
     get:
       summary: Get product history by product ID
+      description: Returns the complete history of changes made to a product, such as name, price, and stock updates.
+      tags:
+        - Product History
+      operationId: getProductHistory
       parameters:
         - in: query
           name: id
@@ -265,11 +302,13 @@ components:
           type:
             - string
             - "null"
+          # nullable: true # Allows null values (obsolette)
           format: date-time
         updated_at:
           type:
             - string
             - "null"
+          # nullable: true # Allows null values (obsolette)
           format: date-time
         deleted:
           type: boolean
@@ -301,6 +340,7 @@ components:
           type:
             - object
             - "null"
+          # nullable: true # Allows null values (obsolette)
           properties:
             code:
               type: integer
@@ -329,6 +369,7 @@ components:
           type:
             - string
             - "null"
+          # nullable: true # Allows null values (obsolette)
           format: date-time
 
   responses:
