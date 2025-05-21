@@ -158,11 +158,12 @@ final class ProductRepository extends BaseRepository
      * @param int $limit Maximum number of products to return (default: 50).
      * @param int $offset Offset for pagination (default: 0).
      * @param array<string,string> $filter Optional filter conditions for WHERE clause.
+     * @param bool $includeDeleted Whether to include soft-deleted products (default: false).
      * @return array<array<string,mixed>> List of products formatted as associative arrays.
      *
      * @throws ProductException If the limit or offset is out of range, or if no products are found.
      */
-    public function getList(int $limit = 50, int $offset = 0, array $filter = []): array
+    public function getList(int $limit = 50, int $offset = 0, array $filter = [], bool $includeDeleted = false): array
     {
 
         if (filter_var($limit, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 100]]) === false) {
@@ -182,6 +183,10 @@ final class ProductRepository extends BaseRepository
             ->limit($limit, $offset)
             ->where($filter)
             ->order('id ASC');
+
+        if (!$includeDeleted) {
+            $query->where('deleted', 0);
+        }
 
         $data = $query->fetchAll();
 
